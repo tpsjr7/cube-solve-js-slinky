@@ -105,14 +105,17 @@ var ops = {
 	}
 };
 
-var copyHashes = function(hashes){
-	var copy = {};
-	for(var i in hashes){
-		copy[i] = true;
+var checkAlreadyHasState = function(newHash, state){
+	while(true){
+		if(newHash == state.hash){
+			return true;
+		}
+		state = state.prevState;
+		if(!state){
+			return false;
+		}
 	}
-	return copy;
-};
-
+}
 
 var pushNewState = function(op, q, state, board){
 	var newBoard = ops[op](board);
@@ -123,17 +126,14 @@ var pushNewState = function(op, q, state, board){
 		debugger;
 	}
 	
-	if(state.hashes.hasOwnProperty(newHash)){
+	if(checkAlreadyHasState(newHash, state)){
 		//aleady been in this state, so don't explore it further
 		return;
 	}
 	
-	var newHashes = copyHashes(state.hashes);
-	newHashes[newHash] = true;
 	stateCount++;
-	q.push({
+	q.enqueue({
 		board: newBoard,
-		hashes: newHashes,
         hash: newHash,
 		op: op,
 		prevState: state
@@ -155,12 +155,12 @@ var report = function(state){
 
 var run = function(){
 	var board = {
-		topCenter: "o",
+		topCenter: "g",
 		hasRotated: "N",
-		centers : "bygw".split(""),
-		tops: "ywbw".split(""),
-		edges: "oboo".split(""),
-		keyBlock: "go".split(""),
+		centers : "woyr".split(""),
+		tops: "gggw".split(""),
+		edges: "woyr".split(""),
+		keyBlock: "rg".split(""),
 		hiddenRight: "xx".split(""),
 		hiddenLeft: "xx".split("")
 	};
@@ -174,17 +174,15 @@ var run = function(){
 		prevState: null,
 		hash: initHash
 	};
-	initState.hashes = {};
-	initState.hashes[initHash] = true;
-	
-	var q = [initState];
+	var q = new Queue();
+	q.enqueue(initState);
 
 	while(true){
-		var state = q.shift();
-		if(!state){
+		if(q.isEmpty()){
 			alert("no solution found");
 			break;
 		}
+		var state = q.dequeue();
 		
 		if(state.hash == endStateHash){
 			report(state);
@@ -203,6 +201,9 @@ var run = function(){
 		if(board.hasRotated == "Y"){
 			pushNewState('r_p', q, state, board);
 			pushNewState('l_', q, state, board);
+		}
+		if(stateCount % 500 == 0){
+			console.log("q: " + q.getLength())
 		}
 	}	
 };
