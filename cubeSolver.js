@@ -105,16 +105,14 @@ var ops = {
 	}
 };
 
-var checkAlreadyHasState = function(newHash, state){
-	while(true){
-		if(newHash == state.hash){
-			return true;
-		}
-		state = state.prevState;
-		if(!state){
-			return false;
-		}
+var encounteredHashes = {};
+
+var checkAlreadyHasState = function(newHash){
+	if(encounteredHashes.hasOwnProperty(newHash)){
+		return true;
 	}
+	encounteredHashes[newHash] = true;
+	return false;
 }
 
 var pushNewState = function(op, q, state, board){
@@ -126,7 +124,7 @@ var pushNewState = function(op, q, state, board){
 		debugger;
 	}
 	
-	if(checkAlreadyHasState(newHash, state)){
+	if(checkAlreadyHasState(newHash)){
 		//aleady been in this state, so don't explore it further
 		return;
 	}
@@ -168,6 +166,7 @@ var run = function(){
 	var endStateHash = calcEndState(board);
 	var initHash = hash(board);
  
+	encounteredHashes[initHash] = true;
   	var initState = {
 		board: board,
 		op: 'nop',
