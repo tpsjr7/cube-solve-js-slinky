@@ -49,19 +49,19 @@ var ops = {
 	'nop': function(board){
 		return copy(board);
 	},
-	't_': function(board){
+	"T": function(board){
 		var b = copy(board);
 		b.tops = [b.tops[1], b.tops[2], b.tops[3], b.tops[0]];
 		b.edges = [b.edges[1], b.edges[2], b.edges[3], b.edges[0]];
 		return b;
 	},
-	't_p': function(board){
+	"T'": function(board){
 		var b = copy(board);
 		b.tops = [b.tops[3], b.tops[0], b.tops[1], b.tops[2]];
 		b.edges = [b.edges[3], b.edges[0], b.edges[1], b.edges[2]];
 		return b;
 	},
-	'r_': function(board){
+	'R': function(board){
 		var b = copy(board);
 		assert(b.hasRotated == "N");
 		b.hiddenRight = [b.edges[0], b.tops[0]];
@@ -71,7 +71,7 @@ var ops = {
 		b.hasRotated = "Y";
 		return b;
 	},
-	'r_p': function(board){
+	"R'": function(board){
 		var b = copy(board);
 		assert(b.hasRotated == "Y");
 		b.hasRotated = "N";
@@ -82,7 +82,7 @@ var ops = {
 		b.hiddenRight = "xx".split("");
 		return b;
 	},
-	'l_': function(board){
+	'L': function(board){
 		var b = copy(board);
 		assert(b.hasRotated == "Y");
 		b.hasRotated = "N";
@@ -93,7 +93,7 @@ var ops = {
 		b.hiddenLeft = "xx".split("");
 		return b;
 	},
-	'l_p': function(board){
+	"L'": function(board){
 		var b = copy(board);
 		assert(b.hasRotated == "N");
 		b.hiddenLeft = [b.edges[3], b.tops[3]];
@@ -139,28 +139,32 @@ var pushNewState = function(op, q, state, board){
 };
 
 var report = function(state){
-	console.log("op: ", state.op);
 	var cs = state;
+	var ops = [state.op];
 	while(true){
         cs = cs.prevState;
         if(!cs){
           break;
         }
-		console.log("op: ", cs.op);
+		ops.push(cs.op)
 	}
-	console.log("state count: " + stateCount)
+	
+	ops.reverse();
+	console.log(ops.join(" "))
+	var d = document.getElementById("output");
+	d.innerHTML = ops.join(" ") + '<br>' + "state count: " + stateCount;
 };
 
 var run = function(){
 	var board = {
-		topCenter: "g",
-		hasRotated: "N",
-		centers : "woyr".split(""),
-		tops: "gggw".split(""),
-		edges: "woyr".split(""),
-		keyBlock: "rg".split(""),
-		hiddenRight: "xx".split(""),
-		hiddenLeft: "xx".split("")
+				topCenter: "o",
+				hasRotated: "N",
+				centers : "bygw".split(""),
+	 			tops: "ywbw".split(""),
+				edges: "oboo".split(""),
+				keyBlock: "go".split(""),
+				hiddenRight: "xx".split(""),
+				hiddenLeft: "xx".split("")
 	};
 
 	var endStateHash = calcEndState(board);
@@ -189,20 +193,20 @@ var run = function(){
 		}
 		
 		board = state.board;
-		pushNewState('t_', q, state, board);
-		pushNewState('t_p', q, state, board);
+		pushNewState("T", q, state, board);
+		pushNewState("T'", q, state, board);
 		
 		if(board.hasRotated == "N"){
-			pushNewState('r_', q, state, board);
-			pushNewState('l_p', q, state, board);
+			pushNewState("R", q, state, board);
+			pushNewState("L'", q, state, board);
 		}
 		
 		if(board.hasRotated == "Y"){
-			pushNewState('r_p', q, state, board);
-			pushNewState('l_', q, state, board);
+			pushNewState("R'", q, state, board);
+			pushNewState("L", q, state, board);
 		}
-		if(stateCount % 500 == 0){
-			console.log("q: " + q.getLength())
-		}
+		// if(stateCount % 500 == 0){
+		// 	console.log("q: " + q.getLength())
+		// }
 	}	
 };
