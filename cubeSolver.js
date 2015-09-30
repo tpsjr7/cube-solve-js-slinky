@@ -103,12 +103,12 @@ FiveByFiveSolver.prototype.getInitialBoard = function(){
 		top: [
 			0,0,0,
 			0,0,1,
-			0,0,0
+			0,0,1
 		],
 		front: [
 			1,1,1,
 			1,1,0,
-			1,1,1
+			1,1,0
 		],
 		rotated: "N",
 		hiddenBack: [-1,-1,-1],
@@ -413,10 +413,10 @@ ThreeByThreeSolver.prototype.getInitialBoard = function(){
 	return {
 		topCenter: "o",
 		hasRotated: "N",
-		centers : "bygw".split(""),
-		tops: "ywbw".split(""),
-		edges: "oboo".split(""),
-		keyBlock: "go".split(""),
+		centers : "wbyg".split(""),
+		tops: "oooo".split(""),
+		edges: "ybwg".split(""),
+		keyBlock: "gw".split(""),
 		hiddenRight: "xx".split(""),
 		hiddenLeft: "xx".split("")
 	};
